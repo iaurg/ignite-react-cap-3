@@ -1,4 +1,5 @@
 import { GetServerSideProps } from "next"
+import { Session } from "next-auth"
 import { getSession } from "next-auth/client"
 import Head from "next/head"
 import { RichText } from "prismic-dom"
@@ -14,6 +15,8 @@ type PostProps = {
     updatedAt: string
   }
 }
+
+
 
 export default function Post({ post }:PostProps) {
   return(
@@ -38,6 +41,15 @@ export default function Post({ post }:PostProps) {
 
 export const getServerSideProps:GetServerSideProps = async ({ req, params }) => {
   const session = await getSession({ req })
+
+  if(!session.activeSubscription) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
+    }
+  }
 
   const { slug } = params
 
